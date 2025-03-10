@@ -44,6 +44,6 @@ public class TransacaoService {
 
     //remover todas transacoes
     public void removertodastransacoes(Transacao transacao){
-        listatransacaos.removeAll((Collection<?>) listatransacaos);
+        listatransacaos.removeAll((Collection<?>) transacao);
     }
 }
