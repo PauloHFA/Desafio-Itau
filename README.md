@@ -6,9 +6,11 @@ Itaú Unibanco - Desafio de Programação Este é um desafio bacana tanto de des
  Sua missão, caso você aceite, é criar uma API REST que recebe Transações e retorna Estatísticas sob essas transações. Para este desafio, a API deve ser criada utilizando-se de Java ou Kotlin e Spring Boot.
 Um bom lugar para se começar é o Spring Starter.
 
-## Dica: Não existe uma forma certa ou errada de resolver o desafio! Vamos avaliar coisas como a qualidade do seu código, o quão fácil é de compreender o código, organização do projeto, quantidade e qualidade dos testes, preocupação com segurança e vários outros fatores :)
+## Dica:
+Não existe uma forma certa ou errada de resolver o desafio! Vamos avaliar coisas como a qualidade do seu código, o quão fácil é de compreender o código, organização do projeto, quantidade e qualidade dos testes, preocupação com segurança e vários outros fatores :)
 
-## Definição do desafio Neste desafio você deve criar uma API REST no GitHub ou GitLab. Leia com atenção todas as instruções a seguir!
+## Definição do desafio 
+Neste desafio você deve criar uma API REST no GitHub ou GitLab. Leia com atenção todas as instruções a seguir!
 2.1. Restrições Técnicas Seu projeto:
 
 DEVE estar no GitHub ou GitLab NÃO DEVE fazer fork de nenhum outro projeto DEVE ter pelo menos 1 commit por cada endpoint (mínimo de 3 commits) Queremos ver a evolução do seu projeto com o tempo ;) Todos os commits DEVEM ser feitos pelo mesmo usuário que criou o projeto Entendemos que algumas pessoas tem usuários pessoais e profissionais, ou um usuário diferente usado para estudar. Atenção com isso se você for uma dessas pessoas! DEVE seguir exatamente os endpoints descritos a seguir Por exemplo, /transacao não é a mesma coisa que /transacoes DEVE aceitar e responder com objetos exatamente como descritos a seguir Por exemplo, dataHora não é a mesma coisa que data-hora ou dtTransacao NÃO DEVE utilizar quaisquer sistemas de banco de dados (como H2, MySQL, PostgreSQL, ...) ou cache (como Redis, Memcached, Infinispan, ...) DEVE armazenar todos os dados em memória DEVE aceitar e responder apenas com JSON Atenção! Por motivos de segurança, não podemos aceitar projetos enviados como arquivos. Você DEVE disponibilizar seu projeto publicamente para que possamos acessá-lo e corrigi-lo! Após receber uma resposta de nós, sinta-se livre para tornar seu projeto privado :)
@@ -39,7 +41,8 @@ Como resposta, espera-se que este endpoint responda com:
 
 200 OK com os dados das estatísticas Um JSON com os campos count, sum, avg, min e max todos preenchidos com seus respectivos valores Atenção! Quando não houverem transações nos últimos 60 segundos considere todos os valores como 0 (zero) 4. 
 
-## Extras Vamos propôr a seguir alguns desafios extras caso você queira testar seus conhecimentos ao máximo! Nenhum desses requisitos é obrigatório, mas são desejados e podem ser um diferencial!
+## Extras 
+Vamos propôr a seguir alguns desafios extras caso você queira testar seus conhecimentos ao máximo! Nenhum desses requisitos é obrigatório, mas são desejados e podem ser um diferencial!
 
 ## Testes automatizados: 
 Sejam unitários e/ou funcionais, testes automatizados são importantes e ajudam a evitar problemas no futuro. Se você fizer testes automatizados, atente-se na efetividade dos seus testes! Por exemplo, testar apenas os "caminhos felizes" não é muito efetivo. 
