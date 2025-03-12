@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/transacao")
 public class TransacaoController {
     private final TransacaoService trasacaoService;
-
 
     private final List<Transacao> transacaos = new ArrayList<>();
 
@@ -20,7 +19,7 @@ public class TransacaoController {
         this.trasacaoService = trasacaoService;
     }
 
-    @PostMapping("/transacao")
+    @PostMapping("/adicionartransacao")
     public void adicionarTransacoes(@RequestBody Transacao transacao){
         trasacaoService.adicionartransacao(transacao);
     }

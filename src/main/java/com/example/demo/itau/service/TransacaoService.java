@@ -9,11 +9,7 @@ import java.util.List;
 
 @Service
 public class TransacaoService {
-    //pensar nas regras de negocio
-    //pegar valor da transacao
-    //pegardatahora transacao
-    //armazenar estas transacoes em uma lista de transacoes, a minha classe de service ela possui um conjunto do meu model de transacao
-    //criar mais metodos relacionados a transacao
+
     private final List<Transacao> listatransacaos = new ArrayList<>();
 
     public void adicionartransacao(Transacao transacao){
