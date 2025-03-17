@@ -14,16 +14,16 @@ public class EstatisticasService {
     }
 
     //metodo que calcula quantidade de transacoes
-    public int contador(){
+    public int contador(List<Transacao> ultimasTransacoes) {
         int count = 0;
-        for (int i = 0; i < transacaos.size() ; i++) {
+        for (int i = 0; i < ultimasTransacoes.size(); i++) {
             count++;
         }
         return count;
     }
 
     //metodo calcula soma das transacoes
-    public double calcularsoma(){
+    public double calcularsoma(List<Transacao> ultimasTransacoes){
         double soma = 0;
         for (int i = 0; i < transacaos.size(); i++) {
             soma+= transacaos.get(i).getValor();
@@ -32,7 +32,7 @@ public class EstatisticasService {
     }
 
     //metodo que calcula a media das transacoes
-    public double calcularmnedia(){
+    public double calcularmnedia(List<Transacao> ultimasTransacoes){
         //o que eu vou precisar? vou precisar armazenar essa media
         double valor = 0;
         int numeroDeTransacoes = transacaos.size();
@@ -49,7 +49,7 @@ public class EstatisticasService {
     }
 
     //metodo para calcular o menor valor das transacoes
-    public double minimo(){
+    public double minimo(List<Transacao> ultimasTransacoes){
         double flagmin = 0;
         double valor = 0;
         for (int i = 0; i < transacaos.size(); i++) {
@@ -62,7 +62,7 @@ public class EstatisticasService {
     }
 
     //metodo para calcular o maior valor das transacoes
-    public double maximo(){
+    public double maximo(List<Transacao> ultimasTransacoes){
         double flagmax = 0;
         double valor = 0;
         for (int i = 0; i < transacaos.size(); i++) {
@@ -72,5 +72,15 @@ public class EstatisticasService {
             flagmax = valor;
         }
         return flagmax;
+    }
+    public double filtrarporvalor(double valor) {
+        double transacaosFiltradas = 0;
+        for (int i = 0; i < transacaos.size(); i++) {
+            Transacao transacao = transacaos.get(i);
+            if(transacao.getValor() == valor){
+                transacaosFiltradas = transacao.getValor();
+            }
+        }
+        return transacaosFiltradas;
     }
 }

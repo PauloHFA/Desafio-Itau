@@ -34,4 +34,8 @@ public class TransacaoController {
     public void  deletarTransacao(@RequestBody Transacao transacao){
         trasacaoService.removertransacao(transacao);
     }
+    @DeleteMapping("/deletar/tudo")
+    public void deletartudo(@RequestBody Transacao transacao){
+        trasacaoService.removertodastransacoes();
+    }
 }
