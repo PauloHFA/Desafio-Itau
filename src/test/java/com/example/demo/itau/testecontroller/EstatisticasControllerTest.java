@@ -54,7 +54,7 @@ public class EstatisticasControllerTest {
         when(estatisticasService.calcularsoma(transacoes)).thenReturn(600.0);
         when(estatisticasService.calcularmnedia(transacoes)).thenReturn(200.0);
 
-        List<Map<String, Double>> response = estatisticasController.getEstatisticas();
+        List<Map<String, Double>> response = (List<Map<String, Double>>) estatisticasController.getEstatisticas();
 
         assertFalse(response.isEmpty());
         assertEquals(300.0, response.get(0).get("maior"));
@@ -67,14 +67,14 @@ public class EstatisticasControllerTest {
     @Test
     void testGetEstatisticasListaVazia() {
         when(transacaoService.transacao60Segundos()).thenReturn(Collections.emptyList());
-        List<Map<String, Double>> response = estatisticasController.getEstatisticas();
+        List<Map<String, Double>> response = (List<Map<String, Double>>) estatisticasController.getEstatisticas();
         assertTrue(response.isEmpty());
     }
 
     @Test
     void testGetUltimasTransacoes() {
         when(transacaoService.transacao60Segundos()).thenReturn(transacoes);
-        List<Transacao> response = estatisticasController.getUltimasTransacoes();
+        List<Transacao> response = (List<Transacao>) estatisticasController.getUltimasTransacoes();
         assertEquals(3, response.size());
     }
 
