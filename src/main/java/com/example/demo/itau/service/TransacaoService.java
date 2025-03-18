@@ -4,6 +4,7 @@ import com.example.demo.itau.model.Transacao;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class TransacaoService {
 
         for (Transacao transacao : listatransacaos) {
             System.out.println("Verificando transação: " + transacao);
-            if (transacao.getTimestamp() != null && transacao.getTimestamp().isAfter(agora.minusSeconds(60))) {
+            if (transacao.getTimestamp() != null && transacao.getTimestamp().isAfter(OffsetDateTime.from(agora.minusSeconds(60)))) {
                 ultimasTransacoes.add(transacao);
             }
         }
@@ -32,7 +33,7 @@ public class TransacaoService {
     // Adiciona uma transação à lista
     public void adicionartransacao(Transacao transacao) {
         if(transacao.getTimestamp() == null){
-            transacao.setTimestamp(Instant.now());
+            transacao.setTimestamp(OffsetDateTime.from(Instant.now()));
         }
         listatransacaos.add(transacao);
         System.out.println("Adicionando transação: " + transacao);
