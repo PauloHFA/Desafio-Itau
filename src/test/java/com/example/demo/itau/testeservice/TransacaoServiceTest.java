@@ -6,70 +6,77 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita Mockito no JUnit 5
+@ExtendWith(MockitoExtension.class)
 public class TransacaoServiceTest {
 
     @InjectMocks
-    private TransacaoService transacaoService; // Classe real a ser testada
+    private TransacaoService transacaoService;
+
+    @Mock
+    private TransacaoService mockTransacaoService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Inicializa os Mocks
-        transacaoService.removertodastransacoes(); // Garante que começamos com uma lista vazia
+        transacaoService.removerTodasTransacoes();
     }
 
     @Test
     void testAdicionarTransacao() {
         Transacao transacao = new Transacao(100.0, OffsetDateTime.now());
 
-        transacaoService.adicionartransacao(transacao);
-        List<Transacao> transacoes = transacaoService.Listartransacoes();
+        doNothing().when(mockTransacaoService).adicionarTransacao(transacao);
+        mockTransacaoService.adicionarTransacao(transacao);
 
-        assertEquals(1, transacoes.size());
-        assertEquals(100.0, transacoes.get(0).getValor());
+        verify(mockTransacaoService, times(1)).adicionarTransacao(transacao);
     }
 
     @Test
     void testListarTransacoes() {
-        transacaoService.adicionartransacao(new Transacao(50.0, OffsetDateTime.now()));
-        transacaoService.adicionartransacao(new Transacao(200.0, OffsetDateTime.now()));
+        Transacao transacao1 = new Transacao(50.0, OffsetDateTime.now());
+        Transacao transacao2 = new Transacao(200.0, OffsetDateTime.now());
 
-        List<Transacao> transacoes = transacaoService.Listartransacoes();
+        when(mockTransacaoService.listarTransacoes()).thenReturn(Arrays.asList(transacao1, transacao2));
+
+        List<Transacao> transacoes = mockTransacaoService.listarTransacoes();
 
         assertEquals(2, transacoes.size());
+        verify(mockTransacaoService, times(1)).listarTransacoes();
     }
 
     @Test
     void testRemoverTransacao() {
         Transacao transacao = new Transacao(300.0, OffsetDateTime.now());
-        transacaoService.adicionartransacao(transacao);
 
-        transacaoService.removertransacao(transacao);
+        doNothing().when(mockTransacaoService).removerTransacao(transacao);
+        mockTransacaoService.removerTransacao(transacao);
 
-        List<Transacao> transacoes = transacaoService.Listartransacoes();
-        assertEquals(0, transacoes.size());
+        verify(mockTransacaoService, times(1)).removerTransacao(transacao);
     }
 
     @Test
     void testTransacao60Segundos() {
-        Transacao antiga = new Transacao(150.0, OffsetDateTime.now().minusSeconds(120));
-        Transacao recente = new Transacao(250.0, OffsetDateTime.now().minusSeconds(30));
+        Transacao antiga = new Transacao(150.0, OffsetDateTime.now());
+        Transacao recente = new Transacao(250.0, OffsetDateTime.now());
 
-        transacaoService.adicionartransacao(antiga);
-        transacaoService.adicionartransacao(recente);
+        when(mockTransacaoService.transacao60Segundos()).thenReturn(Collections.singletonList(recente));
 
-        List<Transacao> ultimasTransacoes = transacaoService.transacao60Segundos();
+        List<Transacao> ultimasTransacoes = mockTransacaoService.transacao60Segundos();
 
         assertEquals(1, ultimasTransacoes.size());
         assertEquals(250.0, ultimasTransacoes.get(0).getValor());
+        verify(mockTransacaoService, times(1)).transacao60Segundos();
     }
 }

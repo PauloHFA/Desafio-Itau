@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +14,14 @@ public class TransacaoService {
 
     private final List<Transacao> listatransacaos = new ArrayList<>();
 
-    // Método que retorna as transações dos últimos 60 segundos
     public List<Transacao> transacao60Segundos() {
-        Instant agora = Instant.now();
         List<Transacao> ultimasTransacoes = new ArrayList<>();
 
         System.out.println("Todas as transações: " + listatransacaos);
-
+        OffsetDateTime agora = OffsetDateTime.now(ZoneOffset.UTC); // Garantindo UTC
         for (Transacao transacao : listatransacaos) {
             System.out.println("Verificando transação: " + transacao);
-            if (transacao.getTimestamp() != null && transacao.getTimestamp().isAfter(OffsetDateTime.from(agora.minusSeconds(60)))) {
+            if (transacao.getTimestamp() != null && transacao.getTimestamp().isAfter(agora.minusSeconds(60))) {
                 ultimasTransacoes.add(transacao);
             }
         }
@@ -31,26 +30,26 @@ public class TransacaoService {
     }
 
     // Adiciona uma transação à lista
-    public void adicionartransacao(Transacao transacao) {
-        if(transacao.getTimestamp() == null){
-            transacao.setTimestamp(OffsetDateTime.from(Instant.now()));
+    public void adicionarTransacao(Transacao transacao) {
+        if (transacao.getTimestamp() == null) {
+            transacao.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC)); // Correção do timestamp
         }
         listatransacaos.add(transacao);
         System.out.println("Adicionando transação: " + transacao);
     }
 
     // Retorna todas as transações
-    public List<Transacao> Listartransacoes() {
+    public List<Transacao> listarTransacoes() { // Nome ajustado para seguir a convenção Java
         return new ArrayList<>(listatransacaos);
     }
 
     // Remove uma transação específica
-    public void removertransacao(Transacao transacao) {
+    public void removerTransacao(Transacao transacao) {
         listatransacaos.remove(transacao);
     }
 
     // Remove todas as transações
-    public void removertodastransacoes() {
+    public void removerTodasTransacoes() {
         listatransacaos.clear();
     }
 }

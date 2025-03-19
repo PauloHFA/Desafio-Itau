@@ -46,18 +46,18 @@ class TransacaoControllerTeste {
                         .content("{\"valor\":100.0,\"timestamp\":\"2024-03-18T12:00:00Z\"}"))
                 .andExpect(status().isOk());
 
-        verify(transacaoService, times(1)).adicionartransacao(any(Transacao.class));
+        verify(transacaoService, times(1)).adicionarTransacao(any(Transacao.class));
     }
 
     @Test
     void testExibirTransacoes() throws Exception {
-        when(transacaoService.Listartransacoes()).thenReturn(Collections.emptyList());
+        when(transacaoService.listarTransacoes()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/transacao/exibirtransacao"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 
-        verify(transacaoService, times(1)).Listartransacoes();
+        verify(transacaoService, times(1)).listarTransacoes();
     }
 
     @Test
@@ -69,7 +69,7 @@ class TransacaoControllerTeste {
                         .content("{\"valor\":50.0,\"timestamp\":\"2024-03-18T12:00:00Z\"}"))
                 .andExpect(status().isOk());
 
-        verify(transacaoService, times(1)).removertransacao(any(Transacao.class));
+        verify(transacaoService, times(1)).removerTransacao(any(Transacao.class));
     }
 
     @Test
@@ -77,6 +77,6 @@ class TransacaoControllerTeste {
         mockMvc.perform(delete("/api/transacao/deletar/tudo"))
                 .andExpect(status().isOk());
 
-        verify(transacaoService, times(1)).removertodastransacoes();
+        verify(transacaoService, times(1)).removerTodasTransacoes();
     }
 }

@@ -2,17 +2,21 @@ package com.example.demo.itau.model;
 
 import lombok.*;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Data
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Transacao {
-    public double valor;
-    public OffsetDateTime dataHora;
-    Instant instant = Instant.now();
-    private OffsetDateTime timestamp = OffsetDateTime.from(instant);
+    private double valor;
+    private OffsetDateTime timestamp;
+
+    public Transacao(double valor){
+        this.valor = valor;
+        this.timestamp = OffsetDateTime.now(ZoneOffset.UTC);
+    }
 
 }

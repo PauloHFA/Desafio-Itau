@@ -29,7 +29,7 @@ public class TransacaoController {
     @PostMapping("/adicionartransacao")
     public ResponseEntity<?> adicionarTransacoes(@RequestBody Transacao transacao) {
         try {
-            trasacaoService.adicionartransacao(transacao);
+            trasacaoService.adicionarTransacao(transacao);
             return ResponseEntity.status(HttpStatus.CREATED).build(); // Retorna 201 Created após adicionar
         } catch (Exception e) {
             logger.error("Erro ao adicionar transação: ", e);  // Log do erro
@@ -42,7 +42,7 @@ public class TransacaoController {
     @GetMapping("/exibirtransacao")
     public ResponseEntity<List<Transacao>> exibirTransacoes() {
         try {
-            List<Transacao> transacoes = trasacaoService.Listartransacoes();
+            List<Transacao> transacoes = trasacaoService.listarTransacoes();
             if (transacoes.isEmpty()) {
                 return ResponseEntity.noContent().build();  // Retorna 204 No Content se não houver transações
             }
@@ -58,7 +58,7 @@ public class TransacaoController {
     @DeleteMapping("/deletar")
     public ResponseEntity<?> deletarTransacao(@RequestBody Transacao transacao) {
         try {
-            trasacaoService.removertransacao(transacao);
+            trasacaoService.removerTransacao(transacao);
             return ResponseEntity.ok().build();  // Retorna 200 OK após deletar
         } catch (Exception e) {
             logger.error("Erro ao deletar transação: ", e);  // Log do erro
@@ -71,7 +71,7 @@ public class TransacaoController {
     @DeleteMapping("/deletar/tudo")
     public ResponseEntity<?> deletartudo(@RequestBody Transacao transacao) {
         try {
-            trasacaoService.removertodastransacoes();
+            trasacaoService.removerTodasTransacoes();
             return ResponseEntity.ok().build();  // Retorna 200 OK após deletar todas
         } catch (Exception e) {
             logger.error("Erro ao deletar todas as transações: ", e);  // Log do erro

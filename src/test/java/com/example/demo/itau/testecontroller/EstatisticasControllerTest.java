@@ -21,7 +21,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita Mockito no JUnit 5
+@ExtendWith(MockitoExtension.class)
 public class EstatisticasControllerTest {
 
     @InjectMocks
@@ -38,10 +38,10 @@ public class EstatisticasControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
         transacoes = Arrays.asList(
-                new Transacao(100.0, OffsetDateTime.now())
-
+                new Transacao(100.0, OffsetDateTime.now()),
+                new Transacao(200.0, OffsetDateTime.now()),
+                new Transacao(300.0, OffsetDateTime.now())
         );
     }
 
@@ -54,62 +54,80 @@ public class EstatisticasControllerTest {
         when(estatisticasService.calcularsoma(transacoes)).thenReturn(600.0);
         when(estatisticasService.calcularmnedia(transacoes)).thenReturn(200.0);
 
-        List<Map<String, Double>> response = (List<Map<String, Double>>) estatisticasController.getEstatisticas();
+        var response = estatisticasController.getEstatisticas();
 
-        assertFalse(response.isEmpty());
-        assertEquals(300.0, response.get(0).get("maior"));
-        assertEquals(100.0, response.get(0).get("menor"));
-        assertEquals(3.0, response.get(0).get("contador"));
-        assertEquals(600.0, response.get(0).get("soma"));
-        assertEquals(200.0, response.get(0).get("media"));
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        Map<String, Double> body = (Map<String, Double>) response.getBody();
+        assertNotNull(body);
+        assertEquals(300.0, body.get("maior"));
+        assertEquals(100.0, body.get("menor"));
+        assertEquals(3.0, body.get("contador"));
+        assertEquals(600.0, body.get("soma"));
+        assertEquals(200.0, body.get("media"));
     }
 
     @Test
     void testGetEstatisticasListaVazia() {
         when(transacaoService.transacao60Segundos()).thenReturn(Collections.emptyList());
-        List<Map<String, Double>> response = (List<Map<String, Double>>) estatisticasController.getEstatisticas();
-        assertTrue(response.isEmpty());
+
+        var response = estatisticasController.getEstatisticas();
+
+        assertEquals(204, response.getStatusCodeValue()); // No Content
+        assertNull(response.getBody());
     }
 
     @Test
     void testGetUltimasTransacoes() {
         when(transacaoService.transacao60Segundos()).thenReturn(transacoes);
-        List<Transacao> response = (List<Transacao>) estatisticasController.getUltimasTransacoes();
-        assertEquals(3, response.size());
+
+        var response = estatisticasController.getUltimasTransacoes();
+
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertEquals(3, response.getBody().size());
     }
 
     @Test
     void testContador() {
-        when(transacaoService.Listartransacoes()).thenReturn(transacoes);
+        when(transacaoService.listarTransacoes()).thenReturn(transacoes);
         when(estatisticasService.contador(transacoes)).thenReturn(3);
-        assertEquals(3, estatisticasController.contador());
+
+        var response = estatisticasController.contador();
+        assertEquals(3, response.getBody());
     }
 
     @Test
     void testCalcularSoma() {
-        when(transacaoService.Listartransacoes()).thenReturn(transacoes);
+        when(transacaoService.listarTransacoes()).thenReturn(transacoes);
         when(estatisticasService.calcularsoma(transacoes)).thenReturn(600.0);
-        assertEquals(600.0, estatisticasController.calcularsoma());
+
+        var response = estatisticasController.calcularsoma();
+        assertEquals(600.0, response.getBody());
     }
 
     @Test
     void testCalcularMedia() {
-        when(transacaoService.Listartransacoes()).thenReturn(transacoes);
+        when(transacaoService.listarTransacoes()).thenReturn(transacoes);
         when(estatisticasService.calcularmnedia(transacoes)).thenReturn(200.0);
-        assertEquals(200.0, estatisticasController.media());
+
+        var response = estatisticasController.media();
+        assertEquals(200.0, response.getBody());
     }
 
     @Test
     void testMinimo() {
-        when(transacaoService.Listartransacoes()).thenReturn(transacoes);
+        when(transacaoService.listarTransacoes()).thenReturn(transacoes);
         when(estatisticasService.minimo(transacoes)).thenReturn(100.0);
-        assertEquals(100.0, estatisticasController.menorvalor());
+
+        var response = estatisticasController.menorvalor();
+        assertEquals(100.0, response.getBody());
     }
 
     @Test
     void testMaximo() {
-        when(transacaoService.Listartransacoes()).thenReturn(transacoes);
+        when(transacaoService.listarTransacoes()).thenReturn(transacoes);
         when(estatisticasService.maximo(transacoes)).thenReturn(300.0);
-        assertEquals(300.0, estatisticasController.maiorvalor());
+
+        var response = estatisticasController.maiorvalor();
+        assertEquals(300.0, response.getBody());
     }
 }
