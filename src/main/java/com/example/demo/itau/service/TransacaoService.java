@@ -16,7 +16,6 @@ public class TransacaoService {
 
     public List<Transacao> transacao60Segundos() {
         List<Transacao> ultimasTransacoes = new ArrayList<>();
-
         System.out.println("Todas as transações: " + listatransacaos);
         OffsetDateTime agora = OffsetDateTime.now(ZoneOffset.UTC); // Garantindo UTC
         for (Transacao transacao : listatransacaos) {

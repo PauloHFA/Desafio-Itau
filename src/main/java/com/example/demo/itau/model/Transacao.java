@@ -18,5 +18,4 @@ public class Transacao {
         this.valor = valor;
         this.timestamp = OffsetDateTime.now(ZoneOffset.UTC);
     }
-
 }

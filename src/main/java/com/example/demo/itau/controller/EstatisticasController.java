@@ -56,7 +56,7 @@ public class EstatisticasController {
                     .body(Map.of("erro", "Erro interno no servidor", "detalhe", e.getMessage()));
         }
     }
-
+    //testar novamente o getultimastransacoes que esta me retornando apenas um 200ok mas nao exibe minha lista das ultimas transacoes
     @GetMapping("/ultimas/transacoes")
     public ResponseEntity<List<Transacao>> getUltimasTransacoes() {
         try {
