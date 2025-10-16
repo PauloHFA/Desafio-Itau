@@ -1,7 +1,6 @@
 package com.example.demo.itau.controller;
 
 import com.example.demo.itau.model.Transacao;
-import com.example.demo.itau.service.EstatisticasService;
 import com.example.demo.itau.service.TransacaoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.DoubleSummaryStatistics;
 
 @RestController
 @RequestMapping("/api/valores")
@@ -18,114 +18,148 @@ public class EstatisticasController {
 
     private static final Logger logger = LoggerFactory.getLogger(EstatisticasController.class);
 
-    private EstatisticasService estatisticasService;
-    private TransacaoService transacaoService;
+    private final TransacaoService transacaoService;
 
     @Autowired
-    public EstatisticasController(EstatisticasService estatisticasService, TransacaoService transacaoService) {
+    public EstatisticasController(TransacaoService transacaoService) {
         this.transacaoService = transacaoService;
-        this.estatisticasService = estatisticasService;
     }
 
+    /**
+     * Retorna estatísticas das transações nos últimos 60 segundos
+     */
     @GetMapping("/estatisticas")
-    public ResponseEntity<?> getEstatisticas() {
+    public ResponseEntity<Map<String, Double>> getEstatisticas() {
         try {
             List<Transacao> ultimasTransacoes = transacaoService.transacao60Segundos();
 
+            Map<String, Double> estatisticas = new HashMap<>();
+
             if (ultimasTransacoes == null || ultimasTransacoes.isEmpty()) {
-                return ResponseEntity.noContent().build(); // Retorna 204 No Content
+                estatisticas.put("count", 0.0);
+                estatisticas.put("sum", 0.0);
+                estatisticas.put("avg", 0.0);
+                estatisticas.put("min", 0.0);
+                estatisticas.put("max", 0.0);
+                return ResponseEntity.ok(estatisticas);
             }
 
-            Map<String, Double> estatisticas = new HashMap<>();
-            estatisticas.put("maior", estatisticasService.maximo(ultimasTransacoes));
-            estatisticas.put("menor", estatisticasService.minimo(ultimasTransacoes));
-            estatisticas.put("contador", (double) estatisticasService.contador(ultimasTransacoes));
-            estatisticas.put("soma", estatisticasService.calcularsoma(ultimasTransacoes));
-            estatisticas.put("media", estatisticasService.calcularmnedia(ultimasTransacoes));
+            DoubleSummaryStatistics stats = ultimasTransacoes.stream()
+                    .mapToDouble(Transacao::getValor)
+                    .summaryStatistics();
 
-            System.out.println("Últimas transações: " + ultimasTransacoes);
-            System.out.println("Estatísticas calculadas: " + estatisticas);
+            estatisticas.put("count", (double) stats.getCount());
+            estatisticas.put("sum", stats.getSum());
+            estatisticas.put("avg", stats.getAverage());
+            estatisticas.put("min", stats.getMin());
+            estatisticas.put("max", stats.getMax());
 
             return ResponseEntity.ok(estatisticas);
         } catch (Exception e) {
-            // Registra a exceção com mais detalhes
-            System.err.println("Erro ao calcular estatísticas: " + e.getMessage());
-            e.printStackTrace();
-
+            logger.error("Erro ao calcular estatísticas: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno no servidor", "detalhe", e.getMessage()));
+                    .body(Map.of("erro", 0.0));
         }
     }
-    //testar novamente o getultimastransacoes que esta me retornando apenas um 200ok mas nao exibe minha lista das ultimas transacoes
+
+    /**
+     * Retorna as transações ocorridas nos últimos 60 segundos
+     */
     @GetMapping("/ultimas/transacoes")
     public ResponseEntity<List<Transacao>> getUltimasTransacoes() {
         try {
             List<Transacao> transacoes = transacaoService.transacao60Segundos();
             return ResponseEntity.ok(transacoes);
         } catch (Exception e) {
-            logger.error("Erro ao obter últimas transações: ", e);  // Log do erro
+            logger.error("Erro ao obter últimas transações: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.emptyList());
         }
     }
 
-    @GetMapping("/contador")
-    public ResponseEntity<?> contador() {
-        try {
-            List<Transacao> transacaos = transacaoService.listarTransacoes();
-            return ResponseEntity.ok(estatisticasService.contador(transacaos));
-        } catch (Exception e) {
-            logger.error("Erro ao calcular contador: ", e);  // Log do erro
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao calcular contador"));
-        }
-    }
-
-    @GetMapping("/soma")
-    public ResponseEntity<?> calcularsoma() {
-        try {
-            List<Transacao> transacaos = transacaoService.listarTransacoes();
-            return ResponseEntity.ok(estatisticasService.calcularsoma(transacaos));
-        } catch (Exception e) {
-            logger.error("Erro ao calcular soma: ", e);  // Log do erro
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao calcular soma"));
-        }
-    }
-
-    @GetMapping("/media")
-    public ResponseEntity<?> media() {
-        try {
-            List<Transacao> transacaos = transacaoService.listarTransacoes();
-            return ResponseEntity.ok(estatisticasService.calcularmnedia(transacaos));
-        } catch (Exception e) {
-            logger.error("Erro ao calcular média: ", e);  // Log do erro
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao calcular média"));
-        }
-    }
-
-    @GetMapping("/menor")
-    public ResponseEntity<?> menorvalor() {
-        try {
-            List<Transacao> transacaos = transacaoService.listarTransacoes();
-            return ResponseEntity.ok(estatisticasService.minimo(transacaos));
-        } catch (Exception e) {
-            logger.error("Erro ao calcular menor valor: ", e);  // Log do erro
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao calcular menor valor"));
-        }
-    }
-
+    /**
+     * Retorna o valor máximo das transações dos últimos 60 segundos
+     */
     @GetMapping("/maior")
-    public ResponseEntity<?> maiorvalor() {
+    public ResponseEntity<Double> getMaiorValor() {
         try {
-            List<Transacao> transacaos = transacaoService.listarTransacoes();
-            return ResponseEntity.ok(estatisticasService.maximo(transacaos));
+            List<Transacao> transacoes = transacaoService.transacao60Segundos();
+            double max = transacoes.stream()
+                    .mapToDouble(Transacao::getValor)
+                    .max()
+                    .orElse(0.0);
+            return ResponseEntity.ok(max);
         } catch (Exception e) {
-            logger.error("Erro ao calcular maior valor: ", e);  // Log do erro
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao calcular maior valor"));
+            logger.error("Erro ao calcular maior valor: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0.0);
+        }
+    }
+
+    /**
+     * Retorna o valor mínimo das transações dos últimos 60 segundos
+     */
+    @GetMapping("/menor")
+    public ResponseEntity<Double> getMenorValor() {
+        try {
+            List<Transacao> transacoes = transacaoService.transacao60Segundos();
+            double min = transacoes.stream()
+                    .mapToDouble(Transacao::getValor)
+                    .min()
+                    .orElse(0.0);
+            return ResponseEntity.ok(min);
+        } catch (Exception e) {
+            logger.error("Erro ao calcular menor valor: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0.0);
+        }
+    }
+
+    /**
+     * Retorna a soma das transações dos últimos 60 segundos
+     */
+    @GetMapping("/soma")
+    public ResponseEntity<Double> getSoma() {
+        try {
+            List<Transacao> transacoes = transacaoService.transacao60Segundos();
+            double soma = transacoes.stream()
+                    .mapToDouble(Transacao::getValor)
+                    .sum();
+            return ResponseEntity.ok(soma);
+        } catch (Exception e) {
+            logger.error("Erro ao calcular soma: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0.0);
+        }
+    }
+
+    /**
+     * Retorna a média das transações dos últimos 60 segundos
+     */
+    @GetMapping("/media")
+    public ResponseEntity<Double> getMedia() {
+        try {
+            List<Transacao> transacoes = transacaoService.transacao60Segundos();
+            double media = transacoes.stream()
+                    .mapToDouble(Transacao::getValor)
+                    .average()
+                    .orElse(0.0);
+            return ResponseEntity.ok(media);
+        } catch (Exception e) {
+            logger.error("Erro ao calcular média: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0.0);
+        }
+    }
+
+    /**
+     * Retorna a quantidade de transações dos últimos 60 segundos
+     */
+    @GetMapping("/contador")
+    public ResponseEntity<Long> getContador() {
+        try {
+            List<Transacao> transacoes = transacaoService.transacao60Segundos();
+            long count = transacoes.size();
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            logger.error("Erro ao calcular contador: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
         }
     }
 }
