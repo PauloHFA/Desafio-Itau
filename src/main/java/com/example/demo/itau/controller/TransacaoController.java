@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transacoes")
@@ -162,6 +164,27 @@ public class TransacaoController {
             logger.error("Erro ao deletar todas as transações: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao deletar todas as transações");
+        }
+
+    }
+
+    // Endpoint para obter métricas de performance
+    @GetMapping("/metrics")
+    public ResponseEntity<Map<String, Object>> obterMetricas() {
+        try {
+            logger.info("Recebendo requisição para obter métricas");
+
+            // Se você adicionou o método getMetricas() na service
+            Map<String, Object> metricas = new HashMap<>();
+            metricas.put("totalTransacoes", transacaoService.quantidadeTransacoes());
+            metricas.put("timestamp", java.time.LocalDateTime.now().toString());
+            metricas.put("status", "OK");
+
+            return ResponseEntity.ok(metricas);
+
+        } catch (Exception e) {
+            logger.error("Erro ao obter métricas: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
